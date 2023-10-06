@@ -19,10 +19,10 @@ def main():
                 print(f"[SERVER] Connected with client {client_address}")
                 while 1:
                     data = connection.recv(shared.BUFSIZE)
-                    if not data:
+                    if not data or data == shared.MSG_CLOSE_CON:
                         break
                     timestamp = datetime.datetime.now()
-                    print(f"[SERVER] Received message from the client:\n\t{timestamp}\n\t{data}\n")
+                    print(f"[SERVER] Received message from the client {client_address}:\n\t{timestamp}\n\t{data}\n")
 
                     time.sleep(5)
 
@@ -32,8 +32,8 @@ def main():
                     sent = 0
                     while sent < data_len:
                         sent += connection.send(data[sent:sent+shared.BUFSIZE])
-                    break
                 connection.shutdown(socket.SHUT_RD)
+                print(f"[SERVER] Disconnected from client {client_address}")
 
 if __name__ == "__main__":
     main()

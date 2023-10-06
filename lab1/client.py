@@ -9,13 +9,14 @@ def main():
         s.connect(shared.SERVER_ADDRESS)
         print(f"[CLIENT] Connected with server")
 
-        msg = input("[CLIENT] Provide a message: ")
-
-        print(f"[CLIENT] Sending message to the server...")
-        s.sendall(msg.encode())
-
-        print(f"[CLIENT] Waiting for response from the server...")
         while 1:
+            msg = input("[CLIENT] Provide a message: ")
+            msg = msg[:shared.BUFSIZE]
+
+            print(f"[CLIENT] Sending message to the server...")
+            s.sendall(msg.encode())
+
+            print(f"[CLIENT] Waiting for response from the server...")
             data = s.recv(shared.BUFSIZE)
             if not data:
                 break
