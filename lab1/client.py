@@ -3,6 +3,7 @@
 import shared
 
 import socket
+from datetime import datetime
 
 def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -12,6 +13,8 @@ def main():
         while 1:
             msg = input("[CLIENT] Provide a message: ")
             msg = msg[:shared.BUFSIZE]
+            if not msg:
+                continue
 
             print(f"[CLIENT] Sending message to the server...")
             s.sendall(msg.encode())
@@ -20,7 +23,8 @@ def main():
             data = s.recv(shared.BUFSIZE)
             if not data:
                 break
-            print(f"[CLIENT] Received: {data}")
+            timestamp = datetime.now()
+            print(f"[CLIENT] Received:\n\t{timestamp}\n\t{data}\n")
 
 
 if __name__ == "__main__":
