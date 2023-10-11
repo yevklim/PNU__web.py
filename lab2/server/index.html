@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Request Song</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+</head>
+<body class="container my-4">
+    <form action="/cgi-bin/request_song.py" method="post">
+        <div class="mb-3">
+            <label for="author" class="form-label">Author</label>
+            <input type="text" class="form-control" id="author" name="author" />
+        </div>
+        <div class="mb-3">
+            <label for="song" class="form-label">Song</label>
+            <input type="text" class="form-control" id="song" name="song" />
+        </div>
+        <div class="mb-3 form-check">
+            <input class="form-check-input" type="radio" name="songFormat" id="songFormatMP3" value="mp3"/>
+            <label class="form-check-label" for="songFormatMP3">
+                MP3 320kbit
+            </label>
+        </div>
+        <div class="mb-3 form-check">
+            <input class="form-check-input" type="radio" name="songFormat" id="songFormatFLAC" value="flac" checked />
+            <label class="form-check-label" for="songFormatFLAC">
+                FLAC (lossless)
+            </label>
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="includeCoverImage" name="includeCoverImage" />
+            <label class="form-check-label" for="includeCoverImage">Include Original Cover Image</label>
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="includeOtherMetadata" name="includeOtherMetadata" />
+            <label class="form-check-label" for="includeOtherMetadata">Include other metadata (Album, Year, Label, etc.)</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Request</button>
+        <input type="submit" value="Clear cookie" class="btn btn-danger" formaction="/cgi-bin/clear_cookie.py" formmethod="post">
+    </form>
+    <!-- <form action="/cgi-bin/clear_cookie.py" method="post">
+        <button type="submit" class="btn btn-primary">Clear cookie</button>
+    </form> -->
+    </body>
+</html>
