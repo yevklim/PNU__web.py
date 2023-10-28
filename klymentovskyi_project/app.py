@@ -1,6 +1,7 @@
 #!./.env/bin/python
 
 from os import uname
+import time
 from flask import Flask, request, render_template, redirect, url_for
 from data import skills_list, projects_list
 system_info=f"{uname().sysname} {uname().release} {uname().machine}"
@@ -10,7 +11,7 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/home')
 def home():
-    return render_template("home.html", system_info=system_info, user_agent=request.user_agent)
+    return render_template("home.html", system_info=system_info, user_agent=request.user_agent, now=time.ctime(time.time()))
 
 @app.route('/projects')
 def projects():
