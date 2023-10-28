@@ -1,0 +1,5 @@
+@media (min-width: 992px) {
+  .position-sticky-lg {
+    position: sticky !important;
+  }
+}
