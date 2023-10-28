@@ -1,17 +1,15 @@
-#!./.env/bin/python
-
 from os import uname
-import time
-from flask import Flask, request, render_template, redirect, url_for
-from data import skills_list, projects_list
+from time import time, ctime
+from flask import request, render_template, redirect, url_for
+from app.data import skills_list, projects_list
 system_info=f"{uname().sysname} {uname().release} {uname().machine}"
 
-app = Flask(__name__)
+from app import app
 
 @app.route('/')
 @app.route('/home')
 def home():
-    return render_template("home.html", system_info=system_info, user_agent=request.user_agent, now=time.ctime(time.time()))
+    return render_template("home.html", system_info=system_info, user_agent=request.user_agent, now=ctime(time()))
 
 @app.route('/projects')
 def projects():
@@ -28,6 +26,3 @@ def skills(idx=None):
 @app.route('/about')
 def about():
     return render_template("about.html")
-
-if __name__ == '__main__':
-    app.run(debug=True)
