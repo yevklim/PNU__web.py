@@ -1,0 +1,68 @@
+{% macro render_field(field) %}
+  {% if field.type == 'StringField' or field.type == 'PasswordField' %}
+    {{ render_text_input(field) }}
+  {% elif field.type == 'BooleanField' %}
+    {{ render_checkbox(field) }}
+  {% elif field.type == 'SubmitField' %}
+    {{ render_submit(field) }}
+  {% endif %}
+{% endmacro %}
+
+{% macro render_text_input(field) %}
+  <div class="mb-3">
+    <label for="{{ field.id }}" class="form-label"> {{ field.label.text }} </label>
+    <div class="input-group has-validation">
+      <input
+        type="{% if field.type == 'StringField' %}text{% elif field.type == 'PasswordField' %}password{% endif %}"
+        class="form-control {% if field.errors.__len__() > 0 %} is-invalid {% endif %}"
+        name="{{ field.name }}"
+        id="{{ field.id }}"
+        aria-describedby="{{ field.id }}-feedback"
+      />
+      {% if field.errors %}
+        <div id="{{ field.id }}-feedback" class="invalid-feedback">
+          <ul>
+            {% for error in field.errors %}
+              <li> {{ error }} </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro render_checkbox(field) %}
+  <div class="form-check mb-3">
+    <input
+      class="form-check-input {% if field.errors.__len__() > 0 %} is-invalid {% endif %}"
+      type="checkbox"
+      value="on"
+      id="{{ field.id }}"
+      name="{{ field.name }}"
+      aria-describedby="{{ field.id }}-feedback"
+    />
+    <label for="{{ field.id }}" class="form-check-label"> {{ field.label.text }} </label>
+    {% if field.errors %}
+      <div id="{{ field.id }}-feedback" class="invalid-feedback">
+        <ul>
+          {% for error in field.errors %}
+            <li> {{ error }} </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro render_submit(field) %}
+  <div class="mb-3">
+    <input
+      class="btn btn-primary"
+      type="submit"
+      id="{{ field.id }}"
+      name="{{ field.name }}"
+      value="{{ field.label.text }}"
+    />
+  </div>
+{% endmacro %}

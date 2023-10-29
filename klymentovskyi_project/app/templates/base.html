@@ -20,6 +20,12 @@
     {% include "base_nav.html" %}
 
     <div class="container flex-grow-1 mt-3">
+        {% for category, message in get_flashed_messages(True) %}
+        <div class="alert alert-{{ category }}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+
         {% block page_body %}
         <h1>Base</h1>
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae eveniet a tempore alias quaerat ipsa nam doloremque sequi dolorum perspiciatis totam aut sit eaque, libero commodi placeat ipsam dolore quo.</p>

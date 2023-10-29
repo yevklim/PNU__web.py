@@ -1,27 +1,14 @@
 {% extends "base.html" %}
+{% from "_form_macros.html" import render_field %}
 
 {% block page_title %} Sign In {% endblock %}
 
 {% block page_body %}
-<form method="POST">
-  <div class="mb-3">
-    <label for="inputUsername" class="form-label">Username</label>
-    <input
-      type="text"
-      class="form-control"
-      name="username"
-      id="inputUsername"
-    />
-  </div>
-  <div class="mb-3">
-    <label for="inputPassword" class="form-label">Password</label>
-    <input
-      type="password"
-      class="form-control"
-      name="password"
-      id="inputPassword"
-    />
-  </div>
-  <button type="submit" class="btn btn-primary">Sign In</button>
+<form method="POST" novalidate>
+  {{ form.csrf_token }}
+  {{ render_field(form.username) }}
+  {{ render_field(form.password) }}
+  {{ render_field(form.remember_me) }}
+  {{ render_field(form.submit) }}
 </form>
 {% endblock %}

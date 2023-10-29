@@ -31,5 +31,5 @@ def change_user_password(user, new_password):
         user["password"] = new_password
         _dump_credentials(user_credentials)
     except Exception as e:
-        return 1
-    return 0
+        return False
+    return True

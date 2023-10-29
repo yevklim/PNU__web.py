@@ -1,19 +1,18 @@
 {% extends "base.html" %}
+{% from "_form_macros.html" import render_field %}
+{% if request.args.get("action") == "change_password" %}
+{% set active_tab = 3 %}
+{% else %}
+{% set active_tab = 0 %}
+{% endif %}
 
 {% block page_title %} Info {% endblock %}
 
 {% block page_body %}
 <h1>Welcome, {{ session["username"] }}</h1>
-{% for category, message in get_flashed_messages(True) %}
-  <div class="alert alert-{{ category }}" role="alert">
-    {{ message }}
-  </div>
-{% endfor %}
-{% if message %}
-{% endif %}
 <ul class="nav nav-tabs" role="tablist">
   <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="tab-table" data-bs-toggle="tab" data-bs-target="#tab-pane-table" type="button" role="tab" aria-controls="tab-pane-table" aria-selected="true">All Cookies</button>
+    <button class="nav-link {% if active_tab == 0 %} active {% endif %}" id="tab-table" data-bs-toggle="tab" data-bs-target="#tab-pane-table" type="button" role="tab" aria-controls="tab-pane-table" aria-selected="false">All Cookies</button>
   </li>
   <li class="nav-item" role="presentation">
     <button class="nav-link" id="tab-add" data-bs-toggle="tab" data-bs-target="#tab-pane-add" type="button" role="tab" aria-controls="tab-pane-add" aria-selected="false">Add Cookie</button>
@@ -22,11 +21,11 @@
     <button class="nav-link" id="tab-delete" data-bs-toggle="tab" data-bs-target="#tab-pane-delete" type="button" role="tab" aria-controls="tab-pane-delete" aria-selected="false">Delete Cookie</button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="tab-change-password" data-bs-toggle="tab" data-bs-target="#tab-pane-change-password" type="button" role="tab" aria-controls="tab-pane-change-password" aria-selected="false">Change Password</button>
+    <button class="nav-link {% if active_tab == 3 %} active {% endif %}" id="tab-change-password" data-bs-toggle="tab" data-bs-target="#tab-pane-change-password" type="button" role="tab" aria-controls="tab-pane-change-password" aria-selected="true">Change Password</button>
   </li>
 </ul>
 <div class="tab-content p-3 border border-top-0">
-  <div class="tab-pane fade show active" id="tab-pane-table" role="tabpanel" aria-labelledby="tab-table" tabindex="0">
+  <div class="tab-pane fade {% if active_tab == 0 %} show active {% endif %}" id="tab-pane-table" role="tabpanel" aria-labelledby="tab-table" tabindex="0">
     <table class="table">
       <thead>
         <tr>
@@ -95,39 +94,13 @@
     </form>
     <form action="{{ url_for('clearcookies') }}" method="POST" id="delete-all"></form>
   </div>
-  <div class="tab-pane fade" id="tab-pane-change-password" role="tabpanel" aria-labelledby="tab-change-password" tabindex="0">
-    <form action="{{ url_for('change_password') }}" method="POST">
-      <div class="mb-3">
-        <label for="inputCurrentPassword" class="form-label">Current Password</label>
-        <input
-          type="password"
-          class="form-control"
-          name="current-password"
-          id="inputCurrentPassword"
-          required
-        />
-      </div>
-      <div class="mb-3">
-        <label for="inputNewPassword" class="form-label">New Password</label>
-        <input
-          type="password"
-          class="form-control"
-          name="new-password"
-          id="inputNewPassword"
-          required
-        />
-      </div>
-      <div class="mb-3">
-        <label for="inputConfirmPassword" class="form-label">Confirm Password</label>
-        <input
-          type="password"
-          class="form-control"
-          name="confirm-password"
-          id="inputConfirmPassword"
-          required
-        />
-      </div>
-      <button type="submit" class="btn btn-primary">Change</button>
+  <div class="tab-pane fade {% if active_tab == 3 %} show active {% endif %}" id="tab-pane-change-password" role="tabpanel" aria-labelledby="tab-change-password" tabindex="0">
+    <form action="{{ url_for('info', action='change_password') }}" method="POST" novalidate>
+      {{ change_password_form.csrf_token }}
+      {{ render_field(change_password_form.current_password) }}
+      {{ render_field(change_password_form.new_password) }}
+      {{ render_field(change_password_form.confirm_password) }}
+      {{ render_field(change_password_form.submit) }}
     </form>
   </div>
 </div>

@@ -7,7 +7,23 @@ from app.data import skills_list, projects_list
 system_info = f"{uname().sysname} {uname().release} {uname().machine}"
 
 from app import app
+from app import forms
 from app import credentials
+
+def _save_user_session(username, remember):
+    print(f"remember {remember}")
+    session["username"] = username
+    if remember:
+        session["expires"] = time() + 60 * 60 * 24 * 92 # 3 months (92 days)
+    else:
+        session["expires"] = time() + 60 * 15 # 15 minutes
+
+@app.before_request
+def check_for_expired_session():
+    now = time()
+    if session.get("expires", now) < now:
+        session.clear()
+        flash("Your session expired. Please sign in again.", "warning")
 
 @app.route('/', methods=["GET"])
 @app.route('/home', methods=["GET"])
@@ -32,67 +48,64 @@ def about():
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        username = request.form.get("username", "")
-        password = request.form.get("password", "")
+    form = forms.LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        remember = form.remember_me.data
+
         user = credentials.get_user_credentials(username)
         username_match = user["username"] == username
         password_match = user["password"] == password
         if username_match and password_match:
             response = redirect(url_for("info"))
-            session["username"] = username
+            _save_user_session(username, remember)
+            flash("Successfully signed in", "success")
             return response
+        else:
+            flash("Incorrect username or password", "danger")
 
-    return render_template("login.html")
+    return render_template("login.html", form=form)
 
 @app.route('/logout', methods=["GET", "POST"])
 def logout():
     response = redirect(url_for("login"))
-    if "username" in session:
-        session.pop("username")
+    session.clear()
     return response
 
 @app.route('/info', methods=["GET", "POST"])
 def info():
-    print(get_flashed_messages(True))
-    username = session["username"]
-    if not username:
+    change_password_form = forms.ChangePasswordForm()
+    if not "username" in session or not session["username"]:
         return redirect(url_for("login"))
-    return render_template("info.html")
 
-@app.route('/change-password', methods=["POST"])
-def change_password():
-    response = redirect(url_for("info"))
+    if request.args.get("action", "") == "change_password":
+        success = change_password(change_password_form)
+        if success:
+            return redirect(url_for("info"))
 
-    current_password = request.form.get("current-password", "")
-    new_password = request.form.get("new-password", "")
-    confirm_password = request.form.get("confirm-password", "")
+    return render_template("info.html", change_password_form=change_password_form)
 
-    if new_password != confirm_password:
-        flash("New and confirm passwords do not match", "danger")
-        return response
+def change_password(form):
+    if not form.validate_on_submit():
+        return
 
-    if not new_password:
-        flash("A new password must be provided", "danger")
-        return response
+    current_password = form.current_password.data
+    new_password = form.new_password.data
 
     username = session["username"]
     user = credentials.get_user_credentials(username)
     if user is None:
         flash(f"User \"{username}\" doesn't exist anymore", "danger")
-        return response
-
-    if current_password == user["password"]:
-        status = credentials.change_user_password(user, new_password)
-        if status == 0:
+    elif current_password == user["password"]:
+        if credentials.change_user_password(user, new_password):
             flash("Successfully changed password", "success")
-            return response
-        else:
-            flash("Failed to change password", "danger")
-            return response
+            return True
+        flash("Failed to change password", "danger")
     else:
         flash("Incorrect password was provided", "danger")
-        return response
+
+    return False
 
 @app.route('/setcookie', methods=["POST"])
 def setcookie():
