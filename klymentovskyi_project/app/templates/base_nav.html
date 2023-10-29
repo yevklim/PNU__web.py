@@ -1,9 +1,12 @@
-{% set menu = {
-  "Main": url_for("home"),
-  "Skills": url_for("skills"),
-  "Projects": url_for("projects"),
-  "About me": url_for("about"),
-} %}
+{% set menu = [
+  { "name": "Main", "url": url_for("home"), "visible": true },
+  { "name": "Skills", "url": url_for("skills"), "visible": true },
+  { "name": "Projects", "url": url_for("projects"), "visible": true },
+  { "name": "About me", "url": url_for("about"), "visible": true },
+  { "name": "Info", "url": url_for("info"), "visible": session.__contains__("username") },
+  { "name": "Sign Out", "url": url_for("logout"), "visible": session.__contains__("username") },
+  { "name": "Sign In", "url": url_for("login"), "visible": not session.__contains__("username") },
+] %}
 
 <nav class="navbar navbar-expand-lg position-sticky-lg top-0 z-3 navbar-light bg-transparent py-3">
   <div class="container-fluid px-5">
@@ -20,10 +23,12 @@
     </button>
     <div class="collapse navbar-collapse" id="collapsableContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-bolder bg-white rounded">
-        {%for name, url in menu.items() %}
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url }}"> {{ name | upper }} </a>
-        </li>
+        {%for item in menu %}
+          {% if item.visible %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ item.url }}"> {{ item.name | upper }} </a>
+            </li>
+          {% endif %}
         {% endfor %}
       </ul>
     </div>
