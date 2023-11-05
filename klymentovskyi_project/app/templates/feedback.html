@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_form_macros.html" import render_field, render_text_input_horizontal %}
+
+{% block page_title %} ToDo List {% endblock %}
+
+{% block page_body %}
+<h1>Feedback form</h1>
+<form method="POST" novalidate>
+    {{ form.csrf_token }}
+    {{ render_field(form.email) }}
+    {{ render_field(form.message) }}
+    {{ render_field(form.submit) }}
+</form>
+
+{% if feedbacks_list.__len__() > 0 %}
+<h1 class="pt-1 mt-3 border-top">Feedbacks</h1>
+<ul class="list-group list-group-flush mb-5">
+    {% for feedback in feedbacks_list %}
+    <li class="list-group-item">
+        <span class="fw-bolder"> {{ feedback["email"] }} </span>
+        <br/>
+        <span> {{ feedback["message"] }} </span>
+    </li>
+    {% endfor%}
+</ul>
+{% endif %}
+
+{% endblock %}
+
+

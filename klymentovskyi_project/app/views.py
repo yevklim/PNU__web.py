@@ -174,3 +174,21 @@ def todo_delete(todo_id):
     db.session.commit()
     flash(f"Deleted \"{todo.task}\"", "success")
     return redirect(url_for("todos"))
+
+@app.route('/feedback', methods=["GET", "POST"])
+def feedback():
+    form = forms.FeedBackForm()
+
+    if form.validate_on_submit():
+        email = form.email.data
+        message = form.message.data
+
+        fb = models.FeedBack(email=email, message=message)
+        db.session.add(fb)
+        db.session.commit()
+        flash("Thank you. We noted your feedback.", "success")
+    elif request.method == "POST":
+        flash("Please resolve the mistakes and resend the form.", "danger")
+
+    feedbacks_list = models.FeedBack.query.all()
+    return render_template("feedback.html", form=form, feedbacks_list=feedbacks_list)

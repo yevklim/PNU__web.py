@@ -1,7 +1,9 @@
 {% macro render_field(field) %}
-  {% if field.type == 'StringField' or field.type == 'PasswordField' %}
+  {% if field.type == 'StringField' or field.type == 'EmailField' or field.type == 'PasswordField' %}
     {{ render_text_input(field) }}
-  {% elif field.type == 'BooleanField' %}
+  {% elif field.type == 'TextAreaField' %}
+    {{ render_text_area(field) }}
+    {% elif field.type == 'BooleanField' %}
     {{ render_checkbox(field) }}
   {% elif field.type == 'SubmitField' %}
     {{ render_submit(field) }}
@@ -45,6 +47,29 @@
         id="{{ field.id }}"
         aria-describedby="{{ field.id }}-feedback"
       />
+      {% if field.errors %}
+        <div id="{{ field.id }}-feedback" class="invalid-feedback">
+          <ul>
+            {% for error in field.errors %}
+              <li> {{ error }} </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro render_text_area(field) %}
+  <div class="mb-3">
+    <label for="{{ field.id }}" class="form-label"> {{ field.label.text }} </label>
+    <div class="input-group has-validation">
+      <textarea
+        class="form-control {% if field.errors.__len__() > 0 %} is-invalid {% endif %}"
+        name="{{ field.name }}"
+        id="{{ field.id }}"
+        rows="10"
+      ></textarea>
       {% if field.errors %}
         <div id="{{ field.id }}-feedback" class="invalid-feedback">
           <ul>
