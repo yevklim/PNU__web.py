@@ -1,6 +1,7 @@
 {% set menu = [
   { "name": "Main", "url": url_for("home"), "visible": true },
   { "name": "Skills", "url": url_for("skills"), "visible": true },
+  { "name": "ToDo List", "url": url_for("todos"), "visible": true },
   { "name": "Projects", "url": url_for("projects"), "visible": true },
   { "name": "About me", "url": url_for("about"), "visible": true },
   { "name": "Info", "url": url_for("info"), "visible": session.__contains__("username") },

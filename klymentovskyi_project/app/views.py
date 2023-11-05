@@ -6,9 +6,7 @@ from flask import request, render_template, redirect, url_for, session, make_res
 from app.data import skills_list, projects_list
 system_info = f"{uname().sysname} {uname().release} {uname().machine}"
 
-from app import app
-from app import forms
-from app import credentials
+from app import app, db, forms, models, credentials
 
 def _save_user_session(username, remember):
     print(f"remember {remember}")
@@ -138,3 +136,40 @@ def clearcookies():
         response.delete_cookie(cookie)
     flash("Deleted all cookies", "success")
     return response
+
+@app.route('/todos', methods=["GET"])
+def todos():
+    form = forms.ToDoForm()
+    todo_list = models.ToDo.query.all()
+    return render_template("todos.html", form=form, todo_list=todo_list)
+
+@app.route('/todo-add', methods=["POST"])
+def todo_add():
+    form = forms.ToDoForm()
+
+    if form.validate_on_submit():
+        task = form.task.data
+        todo = models.ToDo(task=task, completed=False)
+        db.session.add(todo)
+        db.session.commit()
+        flash(f"Added \"{task}\" to the ToDo list", "success")
+    else:
+        flash("Invalid input for a ToDo item", "danger")
+
+    return redirect(url_for("todos"))
+
+@app.route('/todo-update/<int:todo_id>')
+def todo_update(todo_id):
+    todo = models.ToDo.query.get_or_404(todo_id)
+    todo.completed = not todo.completed
+    db.session.commit()
+    flash(f"Updated \"{todo.task}\"", "success")
+    return redirect(url_for("todos"))
+
+@app.route('/todo-delete/<int:todo_id>')
+def todo_delete(todo_id):
+    todo = models.ToDo.query.get_or_404(todo_id)
+    db.session.delete(todo)
+    db.session.commit()
+    flash(f"Deleted \"{todo.task}\"", "success")
+    return redirect(url_for("todos"))

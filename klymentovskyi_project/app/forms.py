@@ -38,3 +38,11 @@ class ChangePasswordForm(FlaskForm):
                                          EqualTo("new_password", "Passwords must match")
                                      ])
     submit = SubmitField("Change")
+
+class ToDoForm(FlaskForm):
+    task = StringField("Enter a task here",
+                       validators=[
+                           Length(max=80),
+                           DataRequired(message="This field is required.")
+                       ])
+    submit = SubmitField("Save")

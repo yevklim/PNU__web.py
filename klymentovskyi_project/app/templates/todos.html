@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% from "_form_macros.html" import render_field, render_text_input_horizontal %}
+
+{% block page_title %} ToDo List {% endblock %}
+
+{% block page_body %}
+<h1>To Do List</h1>
+<div class="card mx-auto">
+    <div class="card-body">
+        <form class="row" method="POST" action="{{ url_for('todo_add') }}" novalidate>
+            {{ form.csrf_token }}
+            <div class="col-auto flex-grow-1">
+                {{ render_text_input_horizontal(form.task) }}
+            </div>
+            <div class="col-auto">
+                {{ render_field(form.submit) }}
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table">
+    <thead>
+        <tr class="vertical-center">
+            <th>No.</th>
+            <th>ToDo item</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for todo in todo_list %}
+        <tr class="vertical-center">
+            <td>{{ todo.id }}</td>
+            <td> {{ todo.task }}</td>
+            <td>
+                {% if not todo.completed %}
+                    <span class="badge text-bg-primary">In progress</span>
+                {% else %}
+                    <span class="badge text-bg-info">Completed</span>
+                {% endif %}
+            </td>
+            <td>
+                <a class="btn btn-success" href="{{ url_for('todo_update', todo_id=todo.id) }}">Update</a>
+                <a class="btn btn-danger" href="{{ url_for('todo_delete', todo_id=todo.id) }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+
