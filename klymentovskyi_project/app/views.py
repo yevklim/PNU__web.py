@@ -149,7 +149,8 @@ def todo_add():
 
     if form.validate_on_submit():
         task = form.task.data
-        todo = models.ToDo(task=task, completed=False)
+        description = form.description.data
+        todo = models.ToDo(task=task, completed=False, description=description)
         db.session.add(todo)
         db.session.commit()
         flash(f"Added \"{task}\" to the ToDo list", "success")

@@ -7,11 +7,10 @@
 <h1>To Do List</h1>
 <div class="card mx-auto">
     <div class="card-body">
-        <form class="row" method="POST" action="{{ url_for('todo_add') }}" novalidate>
+        <form class="d-flex flex-wrap gap-3 fields-grow-1" method="POST" action="{{ url_for('todo_add') }}" novalidate>
             {{ form.csrf_token }}
-            <div class="col-auto flex-grow-1">
-                {{ render_text_input_horizontal(form.task) }}
-            </div>
+            {{ render_text_input_horizontal(form.task) }}
+            {{ render_text_input_horizontal(form.description) }}
             <div class="col-auto">
                 {{ render_field(form.submit) }}
             </div>
@@ -23,6 +22,7 @@
         <tr class="vertical-center">
             <th>No.</th>
             <th>ToDo item</th>
+            <th>Description</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
@@ -30,8 +30,9 @@
     <tbody>
         {% for todo in todo_list %}
         <tr class="vertical-center">
-            <td>{{ todo.id }}</td>
+            <td> {{ todo.id }} </td>
             <td> {{ todo.task }}</td>
+            <td> {{ todo.description }}</td>
             <td>
                 {% if not todo.completed %}
                     <span class="badge text-bg-primary">In progress</span>

@@ -3,3 +3,7 @@
     position: sticky !important;
   }
 }
+
+form.fields-grow-1 > .row.field-grow-1 {
+  flex-grow: 1;
+}

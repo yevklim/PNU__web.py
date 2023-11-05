@@ -45,4 +45,8 @@ class ToDoForm(FlaskForm):
                            Length(max=80),
                            DataRequired(message="This field is required.")
                        ])
+    description = StringField("Enter description",
+                              validators=[
+                                  Length(max=160),
+                              ])
     submit = SubmitField("Save")
