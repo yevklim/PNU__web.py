@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block page_title %} Users {% endblock %}
+
+{% block page_body %}
+
+<h1>Users</h1>
+{% if all_users.__len__() > 0 %}
+<h4>
+    {{ all_users.__len__() }} users:
+</h4>
+<ul class="list-group list-group-flush">
+    {% for user in all_users %}
+    <li class="list-group-item">
+        {{ user["username"] }}
+        <br/>
+        {{ user["email"] }}
+    </li>
+    {% endfor%}
+</ul>
+{% else %}
+<h4>
+    No users
+</h4>
+{% endif %}
+
+{% endblock %}
+
+

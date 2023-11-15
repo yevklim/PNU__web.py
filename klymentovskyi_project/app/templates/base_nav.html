@@ -7,6 +7,7 @@
   { "name": "Info", "url": url_for("info"), "visible": session.__contains__("username") },
   { "name": "Sign Out", "url": url_for("logout"), "visible": session.__contains__("username") },
   { "name": "Sign In", "url": url_for("login"), "visible": not session.__contains__("username") },
+  { "name": "Sign Up", "url": url_for("register"), "visible": not session.__contains__("username") },
   { "name": "Feedbacks", "url": url_for("feedback"), "visible": true },
 ] %}
 

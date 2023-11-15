@@ -8,9 +8,10 @@ system_info = f"{uname().sysname} {uname().release} {uname().machine}"
 
 from app import app, db, forms, models, credentials
 
-def _save_user_session(username, remember):
+def _save_user_session(user, remember):
     print(f"remember {remember}")
-    session["username"] = username
+    session["username"] = user.username
+    session["email"] = user.email
     if remember:
         session["expires"] = time() + 60 * 60 * 24 * 92 # 3 months (92 days)
     else:
@@ -44,24 +45,43 @@ def skills(idx=None):
 def about():
     return render_template("about.html")
 
+@app.route('/users')
+def users():
+    all_users = models.User.query.all()
+    return render_template("users.html", all_users=all_users)
+
+@app.route('/register', methods=["GET", "POST"])
+def register():
+    form = forms.RegistrationForm()
+    if form.validate_on_submit():
+
+        user = models.User(username=form.username.data,
+                           email=form.email.data,
+                           password=form.password.data)
+        db.session.add(user)
+        db.session.commit()
+
+        flash(f"Account created for {form.username.data}", "success")
+        return redirect(url_for("login"))
+    
+    return render_template("register.html", form=form)
+
 @app.route('/login', methods=["GET", "POST"])
 def login():
     form = forms.LoginForm()
     if form.validate_on_submit():
-        username = form.username.data
+        email = form.email.data
         password = form.password.data
         remember = form.remember_me.data
 
-        user = credentials.get_user_credentials(username)
-        username_match = user["username"] == username
-        password_match = user["password"] == password
-        if username_match and password_match:
+        user = models.User.query.filter_by(email=email).first()
+        if user is not None and user.password == password:
             response = redirect(url_for("info"))
-            _save_user_session(username, remember)
+            _save_user_session(user, remember)
             flash("Successfully signed in", "success")
             return response
         else:
-            flash("Incorrect username or password", "danger")
+            flash("Incorrect e-mail or password", "danger")
 
     return render_template("login.html", form=form)
 
@@ -92,14 +112,15 @@ def change_password(form):
     new_password = form.new_password.data
 
     username = session["username"]
-    user = credentials.get_user_credentials(username)
+    email = session["email"]
+    user = models.User.query.filter_by(email=email).first()
     if user is None:
         flash(f"User \"{username}\" doesn't exist anymore", "danger")
-    elif current_password == user["password"]:
-        if credentials.change_user_password(user, new_password):
-            flash("Successfully changed password", "success")
-            return True
-        flash("Failed to change password", "danger")
+    elif current_password == user.password:
+        user.password = new_password;
+        db.session.commit()
+        flash("Successfully changed password", "success")
+        return True
     else:
         flash("Incorrect password was provided", "danger")
 

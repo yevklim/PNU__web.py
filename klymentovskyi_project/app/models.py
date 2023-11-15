@@ -1,6 +1,15 @@
 from app import db
 import sqlalchemy as sa
 
+class User(db.Model):
+    id = sa.Column(sa.Integer, primary_key=True)
+    username = sa.Column(sa.String(20), unique=True, nullable=False)
+    email = sa.Column(sa.String(120), unique=True, nullable=False)
+    image_file = sa.Column(sa.String(20), nullable=False, default="default.jpg")
+    password = sa.Column(sa.String(60), nullable=False)
+
+    def __repr__(self):
+        return f"User('{self.username}', '{self.email}')"
 class ToDo(db.Model):
     __tablename__ = "todo"
     id = sa.Column(sa.Integer, primary_key=True)

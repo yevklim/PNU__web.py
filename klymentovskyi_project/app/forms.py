@@ -1,17 +1,20 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, EmailField, TextAreaField
-from wtforms.validators import DataRequired, Length, EqualTo, Email
+from wtforms.validators import DataRequired, Length, EqualTo, Email, Regexp, ValidationError
+from app import models
 
 
 class LoginForm(FlaskForm):
-    username = StringField("Username", id="username", name="username",
-                           validators=[
-                               DataRequired(message="Username is required"),
-                           ])
+    email = EmailField("E-mail",
+                        validators=[
+                            Length(max=120),
+                            Email(message="Incorrect e-mail"),
+                            DataRequired(message="E-mail is required"),
+                        ])
     password = PasswordField("Password", id="password", name="password",
                              validators=[
                                  DataRequired("Password is required"),
-                                 Length(min=4, max=32)
+                                 Length(min=6, max=60)
                              ])
     remember_me = BooleanField("Remember Me", id="remember-me", name="remember-me",
                                validators=[
@@ -28,16 +31,54 @@ class ChangePasswordForm(FlaskForm):
     new_password = PasswordField("New Password", id="new-password", name="new-password",
                                  validators=[
                                      DataRequired("Required"),
-                                     Length(min=4, max=32),
+                                     Length(min=6, max=60),
                                      EqualTo("confirm_password", "Passwords must match")
                                  ])
     confirm_password = PasswordField("Confirm Password", id="confirm-password", name="confirm-password",
                                      validators=[
                                          DataRequired("Required"),
-                                         Length(min=4, max=32),
+                                         Length(min=6, max=60),
                                          EqualTo("new_password", "Passwords must match")
                                      ])
     submit = SubmitField("Change")
+
+class RegistrationForm(FlaskForm):
+    username = StringField("Username",
+                           validators=[
+                               DataRequired(message="Username is required"),
+                               Length(min=4, max=20),
+                               Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+                                      'Username must have only'
+                                      'letters, numbers, dots'
+                                      'or underscores'),
+                           ])
+    email = EmailField("E-mail",
+                        validators=[
+                            Length(max=120),
+                            Email(message="Incorrect e-mail"),
+                            DataRequired(message="E-mail is required"),
+                        ])
+    password = PasswordField("Password",
+                             validators=[
+                                 DataRequired("Password is required"),
+                                 Length(min=6, max=60),
+                                 EqualTo("confirm_password", "Passwords must match"),
+                             ])
+    confirm_password = PasswordField("Confirm Password", id="confirm-password", name="confirm-password",
+                                     validators=[
+                                         DataRequired("Required"),
+                                         Length(min=6, max=60),
+                                         EqualTo("password", "Passwords must match"),
+                                     ])
+    submit = SubmitField("Sign Up")
+
+    def validate_email(self, field):
+        if models.User.query.filter_by(email=field.data).first():
+            raise ValidationError("E-mail already registered.")
+        
+    def validate_username(self, field):
+        if models.User.query.filter_by(username=field.data).first():
+            raise ValidationError("Username already in use.")
 
 class ToDoForm(FlaskForm):
     task = StringField("Enter a task here",
