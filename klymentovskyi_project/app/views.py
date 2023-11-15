@@ -75,7 +75,7 @@ def login():
         remember = form.remember_me.data
 
         user = models.User.query.filter_by(email=email).first()
-        if user is not None and user.password == password:
+        if user is not None and user.verify_password(password):
             response = redirect(url_for("info"))
             _save_user_session(user, remember)
             flash("Successfully signed in", "success")
@@ -116,7 +116,7 @@ def change_password(form):
     user = models.User.query.filter_by(email=email).first()
     if user is None:
         flash(f"User \"{username}\" doesn't exist anymore", "danger")
-    elif current_password == user.password:
+    elif user.verify_password(current_password):
         user.password = new_password;
         db.session.commit()
         flash("Successfully changed password", "success")

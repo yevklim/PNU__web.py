@@ -1,4 +1,4 @@
-from app import db
+from app import db, bcrypt
 import sqlalchemy as sa
 
 class User(db.Model):
@@ -6,7 +6,29 @@ class User(db.Model):
     username = sa.Column(sa.String(20), unique=True, nullable=False)
     email = sa.Column(sa.String(120), unique=True, nullable=False)
     image_file = sa.Column(sa.String(20), nullable=False, default="default.jpg")
-    password = sa.Column(sa.String(60), nullable=False)
+    password_hash = sa.Column(sa.String(128))
+
+    @property
+    def password(self):
+        """
+        Password cannot be accessed
+        """
+        raise AttributeError("password is not a readable attribute")
+
+    @password.setter
+    def password(self, password):
+        """
+        Store the password's hash
+        """
+        # TODO:
+        self.password_hash = bcrypt.generate_password_hash(password)
+
+    def verify_password(self, password):
+        """
+        Match a password against the password's hash
+        """
+        # TODO:
+        return bcrypt.check_password_hash(self.password_hash, password)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
