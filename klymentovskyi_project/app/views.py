@@ -2,27 +2,12 @@ import json
 from os import uname, path
 from time import time, ctime
 from flask import request, render_template, redirect, url_for, session, make_response, flash, get_flashed_messages
+from flask_login import current_user, login_user, logout_user, login_required
 
 from app.data import skills_list, projects_list
 system_info = f"{uname().sysname} {uname().release} {uname().machine}"
 
-from app import app, db, forms, models, credentials
-
-def _save_user_session(user, remember):
-    print(f"remember {remember}")
-    session["username"] = user.username
-    session["email"] = user.email
-    if remember:
-        session["expires"] = time() + 60 * 60 * 24 * 92 # 3 months (92 days)
-    else:
-        session["expires"] = time() + 60 * 15 # 15 minutes
-
-@app.before_request
-def check_for_expired_session():
-    now = time()
-    if session.get("expires", now) < now:
-        session.clear()
-        flash("Your session expired. Please sign in again.", "warning")
+from app import app, db, forms, models
 
 @app.route('/', methods=["GET"])
 @app.route('/home', methods=["GET"])
@@ -52,6 +37,9 @@ def users():
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for("account"))
+
     form = forms.RegistrationForm()
     if form.validate_on_submit():
 
@@ -68,6 +56,9 @@ def register():
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("account"))
+
     form = forms.LoginForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -76,8 +67,8 @@ def login():
 
         user = models.User.query.filter_by(email=email).first()
         if user is not None and user.verify_password(password):
-            response = redirect(url_for("info"))
-            _save_user_session(user, remember)
+            response = redirect(url_for("account"))
+            login_user(user, remember)
             flash("Successfully signed in", "success")
             return response
         else:
@@ -88,13 +79,19 @@ def login():
 @app.route('/logout', methods=["GET", "POST"])
 def logout():
     response = redirect(url_for("login"))
-    session.clear()
+    logout_user()
+    flash("You have been logged out", "info")
     return response
+
+@app.route('/account', methods=["GET"])
+@login_required
+def account():
+    return render_template("account.html")
 
 @app.route('/info', methods=["GET", "POST"])
 def info():
     change_password_form = forms.ChangePasswordForm()
-    if not "username" in session or not session["username"]:
+    if not current_user.is_authenticated:
         return redirect(url_for("login"))
 
     if request.args.get("action", "") == "change_password":
@@ -111,11 +108,9 @@ def change_password(form):
     current_password = form.current_password.data
     new_password = form.new_password.data
 
-    username = session["username"]
-    email = session["email"]
-    user = models.User.query.filter_by(email=email).first()
+    user = current_user
     if user is None:
-        flash(f"User \"{username}\" doesn't exist anymore", "danger")
+        flash(f"User \"{user.username}\" doesn't exist anymore", "danger")
     elif user.verify_password(current_password):
         user.password = new_password;
         db.session.commit()
