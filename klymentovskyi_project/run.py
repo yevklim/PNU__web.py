@@ -1,5 +1,5 @@
 #!./.env/bin/python
-from app import app
+from app import create_app
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    create_app("dev").run(debug=True)
