@@ -1,0 +1,18 @@
+{% extends "base/base.html" %}
+
+{% block page_title %} Projects {% endblock %}
+
+{% block page_body %}
+
+<h1>Big Projects</h1>
+<ul class="list-group list-group-flush">
+    {% for project in projects_list %}
+    <li class="list-group-item">
+        <span class="fw-bolder"> {{ project["title"] }} </span>
+        <br/>
+        <span> {{ project["description"] }} </span>
+    </li>
+    {% endfor%}
+</ul>
+
+{% endblock %}

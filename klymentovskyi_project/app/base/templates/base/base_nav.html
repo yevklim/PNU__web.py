@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-lg position-sticky-lg top-0 z-3 navbar-light bg-transparent py-3">
+  <div class="container-fluid px-5">
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#collapsableContent"
+      aria-controls="collapsableContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsableContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-bolder bg-white rounded">
+        {%for item in menu %}
+          {% if item == menu_separator %}
+            <li class="border-top border-top-lg-0 border-start-lg mx-lg-3 nav-sep"></li>
+          {% elif item.visible %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ item.url }}"> {{ item.name | upper }} </a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</nav>

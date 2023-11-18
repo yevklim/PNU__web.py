@@ -1,0 +1,22 @@
+{% extends "base/base.html" %}
+
+{% block page_title %} Skill #{{idx}} {% endblock %}
+
+{% block page_body %}
+    {% if idx <= skills_list.__len__() %}
+        <h1 class="h3">Skill #{{ idx }}: {{ skills_list[idx-1]["title"] }}</h1>
+        <h2 class="h4">Experience: {{ skills_list[idx-1]["experience"] }} </h2>
+        {% if skills_list[idx-1]["subskills"].__len__() > 0 %}
+            <h2 class="h4">Subskills:</h3>
+            <ul class="list-group list-group-flush">
+                {% for subskill in skills_list[idx-1]["subskills"] %}
+                <li class="list-group-item"> {{ subskill }} </li>
+                {% endfor%}
+            </ul>
+        {% endif %}
+    {% else %}
+        Not Found
+    {% endif %}
+{% endblock %}
+
+

@@ -1,0 +1,31 @@
+@media (min-width: 992px) {
+  .position-sticky-lg {
+    position: sticky !important;
+  }
+
+  .border-top-lg {
+    border-top: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+  }
+  .border-top-lg-0 {
+    border-top: 0 !important;
+  }
+  .border-start-lg {
+    border-left: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+  }
+  .border-start-lg-0 {
+    border-left: 0 !important;
+  }
+}
+
+form.fields-grow-1 > .row.field-grow-1 {
+  flex-grow: 1;
+}
+
+.user-avatar {
+  width: 200px;
+  height: 200px;
+}
+
+.nav-sep + .nav-sep {
+  display: none;
+}
