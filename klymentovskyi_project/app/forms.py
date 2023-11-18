@@ -43,6 +43,10 @@ class UpdateAccountForm(FlaskForm):
                        validators=[
                            FileAllowed(["jpg", "png"])
                        ])
+    about_me = TextAreaField("About Me",
+                             validators=[
+                                 Length(max=512),
+                             ])
     submit = SubmitField("Update")
 
     def validate_email(self, field):
@@ -63,7 +67,7 @@ class ChangePasswordForm(FlaskForm):
     current_password = PasswordField("Current Password", id="current-password", name="current-password",
                                      validators=[
                                          DataRequired("Required"),
-                                         Length(min=4, max=32)
+                                         Length(min=6, max=60)
                                      ])
     new_password = PasswordField("New Password", id="new-password", name="new-password",
                                  validators=[
@@ -78,6 +82,10 @@ class ChangePasswordForm(FlaskForm):
                                          EqualTo("new_password", "Passwords must match")
                                      ])
     submit = SubmitField("Change")
+
+    def validate_current_password(self, field):
+        if not current_user.verify_password(field.data):
+            raise ValidationError("Incorrect current password.")
 
 class RegistrationForm(FlaskForm):
     username = StringField("Username",
@@ -112,7 +120,7 @@ class RegistrationForm(FlaskForm):
     def validate_email(self, field):
         if models.User.query.filter_by(email=field.data).first():
             raise ValidationError("E-mail already registered.")
-        
+
     def validate_username(self, field):
         if models.User.query.filter_by(username=field.data).first():
             raise ValidationError("Username already in use.")

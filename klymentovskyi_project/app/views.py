@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from os import uname, path
 from time import time, ctime
 from flask import request, render_template, redirect, url_for, session, make_response, flash, get_flashed_messages
@@ -8,6 +9,13 @@ from app.data import skills_list, projects_list
 system_info = f"{uname().sysname} {uname().release} {uname().machine}"
 
 from app import app, db, forms, models
+
+@app.after_request
+def user_last_seen_update(response):
+    if current_user and current_user.is_authenticated:
+        current_user.last_seen = datetime.now()
+        db.session.commit()
+        return response
 
 @app.route('/', methods=["GET"])
 @app.route('/home', methods=["GET"])
@@ -86,19 +94,28 @@ def logout():
 @app.route('/account', methods=["GET", "POST"])
 @login_required
 def account():
+    action = request.args.get("action", "")
     form = forms.UpdateAccountForm()
-    if form.validate_on_submit():
+    change_password_form = forms.ChangePasswordForm()
+    if action == "update_profile" and form.validate_on_submit():
         current_user.username = form.username.data
         current_user.email = form.email.data
+        current_user.about_me = form.about_me.data
         if form.picture.data:
             current_user.new_image_file(form.picture.data)
         db.session.commit()
         flash("Your account has been updated.", "success")
         return redirect(url_for("account"))
-    elif request.method == "GET":
+    elif action == "change_password" and change_password_form.validate_on_submit():
+        current_user.password = change_password_form.new_password.data
+        db.session.commit()
+        flash("Successfully changed password", "success")
+        return redirect(url_for("account"))
+    if action != "update_profile" or request.method == "GET":
         form.username.data = current_user.username
         form.email.data = current_user.email
-    return render_template("account.html", form=form)
+        form.about_me.data = current_user.about_me
+    return render_template("account.html", form=form, change_password_form=change_password_form)
 
 @app.route('/info', methods=["GET", "POST"])
 def info():

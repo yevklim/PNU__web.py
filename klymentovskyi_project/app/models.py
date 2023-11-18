@@ -10,10 +10,13 @@ def user_loader(user_id):
     return User.query.get(int(user_id))
 
 class User(db.Model, UserMixin):
+    __tablename__ = "user"
     id = sa.Column(sa.Integer, primary_key=True)
     username = sa.Column(sa.String(20), unique=True, nullable=False)
     email = sa.Column(sa.String(120), unique=True, nullable=False)
     image_file = sa.Column(sa.String(20), nullable=False, default="default.jpg")
+    about_me = sa.Column(sa.String(512), nullable=True, default="")
+    last_seen = sa.Column(sa.DateTime(True), nullable=True)
     password_hash = sa.Column(sa.String(128))
 
     @property
