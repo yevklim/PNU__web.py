@@ -1,9 +1,9 @@
 {% macro render_field(field) %}
-  {% if field.type == 'StringField' or field.type == 'EmailField' or field.type == 'PasswordField' %}
+  {% if field.type == 'StringField' or field.type == 'EmailField' or field.type == 'PasswordField' or field.type == 'FileField' %}
     {{ render_text_input(field) }}
   {% elif field.type == 'TextAreaField' %}
     {{ render_text_area(field) }}
-    {% elif field.type == 'BooleanField' %}
+  {% elif field.type == 'BooleanField' %}
     {{ render_checkbox(field) }}
   {% elif field.type == 'SubmitField' %}
     {{ render_submit(field) }}
@@ -15,10 +15,13 @@
     <label for="{{ field.id }}" class="form-label"> {{ field.label.text }} </label>
     <div class="input-group has-validation">
       <input
-        type="{% if field.type == 'StringField' %}text{% elif field.type == 'PasswordField' %}password{% endif %}"
+        type="{% if field.type == 'StringField' %}text{% elif field.type == 'PasswordField' %}password{% elif field.type == 'FileField' %}file{% endif %}"
         class="form-control {% if field.errors.__len__() > 0 %} is-invalid {% endif %}"
         name="{{ field.name }}"
         id="{{ field.id }}"
+        {% if field.type != 'PasswordField' and field.type != 'FileField' %}
+          value="{{ field.data if field.data else "" }}"
+        {% endif %}
         aria-describedby="{{ field.id }}-feedback"
       />
       {% if field.errors %}
@@ -45,6 +48,9 @@
         class="form-control {% if field.errors.__len__() > 0 %} is-invalid {% endif %}"
         name="{{ field.name }}"
         id="{{ field.id }}"
+        {% if field.type != 'PasswordField' %}
+          value="{{ field.data if field.data else "" }}"
+        {% endif %}
         aria-describedby="{{ field.id }}-feedback"
       />
       {% if field.errors %}
@@ -69,7 +75,7 @@
         name="{{ field.name }}"
         id="{{ field.id }}"
         rows="10"
-      ></textarea>
+      >{{ field.data if field.data else "" }}</textarea>
       {% if field.errors %}
         <div id="{{ field.id }}-feedback" class="invalid-feedback">
           <ul>
@@ -91,6 +97,7 @@
       value="on"
       id="{{ field.id }}"
       name="{{ field.name }}"
+      value="{{ field.data if field.data else "" }}"
       aria-describedby="{{ field.id }}-feedback"
     />
     <label for="{{ field.id }}" class="form-check-label"> {{ field.label.text }} </label>

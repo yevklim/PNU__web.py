@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, EmailField, TextAreaField
 from wtforms.validators import DataRequired, Length, EqualTo, Email, Regexp, ValidationError
 from app import models
+from flask_login import current_user
 
 
 class LoginForm(FlaskForm):
@@ -21,6 +23,41 @@ class LoginForm(FlaskForm):
                                ])
     submit = SubmitField("Sign In")
 
+class UpdateAccountForm(FlaskForm):
+    username = StringField("Username",
+                           validators=[
+                               DataRequired(message="Username is required"),
+                               Length(min=4, max=20),
+                               Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+                                      'Username must have only '
+                                      'letters, numbers, dots '
+                                      'or underscores'),
+                           ])
+    email = EmailField("E-mail",
+                        validators=[
+                            Length(max=120),
+                            Email(message="Incorrect e-mail"),
+                            DataRequired(message="E-mail is required"),
+                        ])
+    picture = FileField("Update Profile Picture",
+                       validators=[
+                           FileAllowed(["jpg", "png"])
+                       ])
+    submit = SubmitField("Update")
+
+    def validate_email(self, field):
+        if field.data == current_user.email:
+            return
+
+        if models.User.query.filter_by(email=field.data).first():
+            raise ValidationError("E-mail already registered.")
+
+    def validate_username(self, field):
+        if field.data == current_user.username:
+            return
+
+        if models.User.query.filter_by(username=field.data).first():
+            raise ValidationError("Username already in use.")
 
 class ChangePasswordForm(FlaskForm):
     current_password = PasswordField("Current Password", id="current-password", name="current-password",
@@ -48,8 +85,8 @@ class RegistrationForm(FlaskForm):
                                DataRequired(message="Username is required"),
                                Length(min=4, max=20),
                                Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
-                                      'Username must have only'
-                                      'letters, numbers, dots'
+                                      'Username must have only '
+                                      'letters, numbers, dots '
                                       'or underscores'),
                            ])
     email = EmailField("E-mail",

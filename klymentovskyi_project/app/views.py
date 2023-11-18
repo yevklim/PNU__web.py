@@ -83,10 +83,22 @@ def logout():
     flash("You have been logged out", "info")
     return response
 
-@app.route('/account', methods=["GET"])
+@app.route('/account', methods=["GET", "POST"])
 @login_required
 def account():
-    return render_template("account.html")
+    form = forms.UpdateAccountForm()
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        if form.picture.data:
+            current_user.new_image_file(form.picture.data)
+        db.session.commit()
+        flash("Your account has been updated.", "success")
+        return redirect(url_for("account"))
+    elif request.method == "GET":
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    return render_template("account.html", form=form)
 
 @app.route('/info', methods=["GET", "POST"])
 def info():

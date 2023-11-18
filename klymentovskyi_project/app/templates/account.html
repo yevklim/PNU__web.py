@@ -1,7 +1,27 @@
 {% extends "base.html" %}
+{% from "_form_macros.html" import render_field %}
 
 {% block page_title %} Account {% endblock %}
 
 {% block page_body %}
-  <h1>{{ current_user.username }}</h1>
+  <div class="container">
+    <div class="row">
+      <div class="col-4 text-center">
+        <div class="w-100 position-sticky fix-offset-top">
+          <img class="rounded-circle user-avatar mb-3" src="{{ url_for('static', filename=current_user.image_filename) }}"/>
+          <h2 class="account-heading">{{ current_user.username }}</h2>
+          <p class="text-secondary">{{ current_user.email }}</p>
+        </div>
+      </div>
+      <div class="col-8">
+        <form method="POST" enctype="multipart/form-data" novalidate>
+          {{ form.csrf_token }}
+          {{ render_field(form.email) }}
+          {{ render_field(form.username) }}
+          {{ render_field(form.picture) }}
+          {{ render_field(form.submit) }}
+        </form>
+      </div>
+    </div>
+  </div>
 {% endblock %}

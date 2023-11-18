@@ -1,4 +1,7 @@
-from app import db, bcrypt, login_manager
+from os import path
+from secrets import token_hex
+from PIL import Image
+from app import app, db, bcrypt, login_manager
 import sqlalchemy as sa
 from flask_login import UserMixin
 
@@ -12,6 +15,24 @@ class User(db.Model, UserMixin):
     email = sa.Column(sa.String(120), unique=True, nullable=False)
     image_file = sa.Column(sa.String(20), nullable=False, default="default.jpg")
     password_hash = sa.Column(sa.String(128))
+
+    @property
+    def image_filename(self):
+        if self.image_file == "default.jpg":
+            return "images/default.jpg"
+        return "upload/avatars/" + self.image_file
+
+    def new_image_file(self, form_file):
+        random_hex = token_hex(8)
+        f_ext = path.splitext(form_file.filename)[1]
+        f_name = random_hex + f_ext
+        f_path = path.join(app.root_path, "static/upload/avatars", f_name)
+
+        img = Image.open(form_file)
+        img.thumbnail((200, 200))
+        img.save(f_path)
+
+        self.image_file = f_name
 
     @property
     def password(self):
