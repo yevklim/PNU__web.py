@@ -39,6 +39,9 @@ def create_app(config_name = "default"):
         from .user import user_blueprint
         app.register_blueprint(user_blueprint)
 
+        from .post import post_blueprint
+        app.register_blueprint(post_blueprint)
+
         from .cookies import cookies_blueprint
         app.register_blueprint(cookies_blueprint)
 
