@@ -1,0 +1,29 @@
+{% extends "base/base.html" %}
+
+{% block page_title %} Post #{{ post["id"] }} {% endblock %}
+
+{% block page_body %}
+
+<h3>{{ post["title"] }}</h3>
+<p class="mb-2"> {{ post["created"].ctime() }} </p>
+<p class="d-flex gap-2 mb-2">
+    <span class="badge text-bg-secondary text-light"> {{ post["type"]["label"] }} </span>
+    {% if post["user_id"] == current_user.id %}
+        {% if post["enabled"] %}
+        <span class="badge text-bg-success">Visible for everyone</span>
+        {% else %}
+        <span class="badge text-bg-danger">Hidden from others</span>
+        {% endif %}
+    {% endif %}
+</p>
+<p class="pre-wrap">{{ post["text"] }}</p>
+{% if post["user_id"] == current_user.id %}
+<p>
+    <a href="{{ url_for('.update', id=post['id']) }}" class="btn btn-primary">Edit</a>
+    <a href="{{ url_for('.delete', id=post['id']) }}" class="btn btn-danger">Delete</a>
+</p>
+{% endif %}
+
+{% endblock %}
+
+

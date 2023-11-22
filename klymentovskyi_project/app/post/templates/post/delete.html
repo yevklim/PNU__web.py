@@ -1,0 +1,14 @@
+{% extends "base/base.html" %}
+{% from "base/macros.html" import render_field %}
+
+{% block page_title %} Delete Post {% endblock %}
+
+{% block page_body %}
+<h1>{{ post["title"] }}</h1>
+<span>{{ post["created"] }}</span> <br/>
+<span>{{ post["type"]["label"] }}</span> <br/>
+<form method="POST" novalidate>
+  {{ form.csrf_token }}
+  {{ render_field(form.submit) }}
+</form>
+{% endblock %}

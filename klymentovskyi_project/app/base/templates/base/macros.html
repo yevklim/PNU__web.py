@@ -98,6 +98,7 @@
       id="{{ field.id }}"
       name="{{ field.name }}"
       value="{{ field.data if field.data else "" }}"
+      {{ "checked" if field.data else "" }}
       aria-describedby="{{ field.id }}-feedback"
     />
     <label for="{{ field.id }}" class="form-check-label"> {{ field.label.text }} </label>
@@ -116,7 +117,7 @@
 {% macro render_submit(field) %}
   <div class="">
     <input
-      class="btn btn-primary"
+      class="btn btn-{{ (field.render_kw and field.render_kw.get('category')) or 'primary' }}"
       type="submit"
       id="{{ field.id }}"
       name="{{ field.name }}"

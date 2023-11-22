@@ -29,3 +29,7 @@ form.fields-grow-1 > .row.field-grow-1 {
 .nav-sep + .nav-sep {
   display: none;
 }
+
+.pre-wrap {
+  white-space: pre-wrap;
+}

@@ -1,0 +1,46 @@
+{% extends "base/base.html" %}
+
+{% block page_title %} Posts {% endblock %}
+
+{% block page_body %}
+
+<h1>Posts</h1>
+{% if all_posts.__len__() > 0 %}
+<ul class="list-group list-group-flush">
+    {% for post in all_posts %}
+    <li class="list-group-item">
+        <h3>
+            <a href="{{ url_for('.post', id=post['id']) }}" class="link-dark"> {{ post["title"] }} </a>
+        </h3>
+        <p class="mb-2"> {{ post["created"].ctime() }} </p>
+        <p class="d-flex gap-2 mb-2">
+            <span class="badge text-bg-secondary text-light"> {{ post["type"]["label"] }} </span>
+            {% if post["user_id"] == current_user.id %}
+                {% if post["enabled"] %}
+                <span class="badge text-bg-success">Visible for everyone</span>
+                {% else %}
+                <span class="badge text-bg-danger">Hidden from others</span>
+                {% endif %}
+            {% endif %}
+        </p>
+        <p>
+            Published by
+            {% if post["user_id"] == current_user.id %}
+            <a href="{{ url_for('user.account') }}" class="text-secondary">You</a>
+            {% else %}
+            {{ post["user"]["username"] }}
+            (<a class="text-secondary" href="mailto:{{ post['user']['email'] }}">{{ post["user"]["email"] }}</a>)
+            {% endif %}
+        </p>
+    </li>
+    {% endfor%}
+</ul>
+{% else %}
+<h4>
+    No posts
+</h4>
+{% endif %}
+
+{% endblock %}
+
+

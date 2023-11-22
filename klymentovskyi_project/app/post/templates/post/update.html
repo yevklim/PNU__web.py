@@ -1,0 +1,15 @@
+{% extends "base/base.html" %}
+{% from "base/macros.html" import render_field %}
+
+{% block page_title %} Update Post {% endblock %}
+
+{% block page_body %}
+<form method="POST" novalidate>
+  {{ form.csrf_token }}
+  {{ render_field(form.title) }}
+  {{ render_field(form.text) }}
+  {{ form.type() }}
+  {{ render_field(form.enabled) }}
+  {{ render_field(form.submit) }}
+</form>
+{% endblock %}
