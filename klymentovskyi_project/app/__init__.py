@@ -63,6 +63,7 @@ def create_app(config_name = "default"):
             menu.separator(),
             menu.MenuItem("Posts", "post.list"),
             menu.MenuItem("Post", "post.create"),
+            menu.MenuItem("Categories", "post.category_list"),
             menu.separator(),
             menu.MenuItem("Users", "user.list"),
             menu.MenuItem("Account", "user.account", lambda : (current_user and current_user.is_authenticated)),

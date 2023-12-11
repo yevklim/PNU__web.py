@@ -1,0 +1,36 @@
+{% extends "base/base.html" %}
+{% from "base/macros.html" import render_field, render_text_input_horizontal %}
+
+{% block page_title %} Categories {% endblock %}
+
+{% block page_body %}
+
+<h1>Categories</h1>
+<div class="card mx-auto">
+    <div class="card-body">
+        <form class="d-flex flex-wrap gap-3 fields-grow-1" method="POST" novalidate>
+            {{ creation_form.csrf_token }}
+            {{ render_text_input_horizontal(creation_form.name) }}
+            <div class="col-auto">
+                {{ render_field(creation_form.submit) }}
+            </div>
+        </form>
+    </div>
+</div>
+{% if all_categories.__len__() > 0 %}
+<ul class="list-group list-group-flush">
+    {% for category in all_categories %}
+    <li class="list-group-item d-flex flex-row gap-1 align-items-center">
+        <span class="flex-grow-1"> {{ category["name"] }} </span>
+        <a class="btn btn-success" href="{{ url_for('.category_update', id=category.id) }}">Update</a>
+        <form action="{{ url_for('.category_delete', id=category.id) }}" method="post" novalidate>
+            <input type="submit" class="btn btn-danger" value="Delete" />
+        </form>
+    </li>
+    {% endfor%}
+</ul>
+{% endif %}
+
+{% endblock %}
+
+

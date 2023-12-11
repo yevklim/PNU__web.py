@@ -7,6 +7,7 @@
 <h3>{{ post["title"] }}</h3>
 <p class="mb-2"> {{ post["created"].ctime() }} </p>
 <p class="d-flex gap-2 mb-2">
+    <span class="badge text-bg-primary text-light"> {{ post["category"]["name"] }} </span>
     <span class="badge text-bg-secondary text-light"> {{ post["type"]["label"] }} </span>
     {% if post["user_id"] == current_user.id %}
         {% if post["enabled"] %}
