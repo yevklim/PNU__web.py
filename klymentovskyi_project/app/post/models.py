@@ -1,5 +1,9 @@
+from __future__ import annotations
+from typing import List
+
 from sqlalchemy import Column, Integer, String, DateTime, Enum, Boolean, ForeignKey
 import sqlalchemy as sa
+from sqlalchemy.orm import Mapped
 from flask_login import current_user
 import enum
 from datetime import datetime
@@ -32,11 +36,17 @@ class Category(db.Model):
     name = Column(String(48), nullable=False)
     posts = db.relationship('Post', backref='category', lazy=True)
 
+post_tag_m2m = db.Table(
+    "post_tag",
+    Column("post_id", ForeignKey("post.id", name="fk_post_tag_m2m_post_id"), primary_key=True),
+    Column("tag_id", ForeignKey("tag.id", name="fk_post_tag_m2m_tag_id"), primary_key=True),
+)
 
 class Tag(db.Model):
     __tablename__ = "tag"
     id = Column(Integer, primary_key=True)
     name = Column(String(48), nullable=False)
+    posts: Mapped[List[Post]] = db.relationship(secondary=post_tag_m2m, back_populates="tags")
 
 
 class Post(db.Model):
@@ -49,6 +59,7 @@ class Post(db.Model):
     enabled = Column(Boolean, nullable=False, default=True)
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
     category_id = Column(Integer, ForeignKey(Category.id, name="fk_post_category_id"), nullable=False)
+    tags: Mapped[List[Tag]] = db.relationship(secondary=post_tag_m2m, back_populates="posts")
 
     def __repr__(self):
         return f"Post('{self.id}', '{self.created}', '{self.title}')"
@@ -67,9 +78,3 @@ class Post(db.Model):
 
         return db.session.execute(query).scalars()
 
-
-post_tag_m2m = db.Table(
-    "post_tag",
-    Column("post_id", ForeignKey(Post.id, name="fk_post_tag_m2m_post_id"), primary_key=True),
-    Column("tag_id", ForeignKey(Tag.id, name="fk_post_tag_m2m_tag_id"), primary_key=True),
-)
