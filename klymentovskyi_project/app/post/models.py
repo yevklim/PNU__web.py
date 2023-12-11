@@ -26,6 +26,19 @@ class EnumType(enum.Enum):
 User.posts = db.relationship('Post', backref='user', lazy=True)
 
 
+class Category(db.Model):
+    __tablename__ = "category"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(48), nullable=False)
+    posts = db.relationship('Post', backref='category', lazy=True)
+
+
+class Tag(db.Model):
+    __tablename__ = "tag"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(48), nullable=False)
+
+
 class Post(db.Model):
     __tablename__ = "post"
     id = Column(Integer, primary_key=True)
@@ -35,6 +48,7 @@ class Post(db.Model):
     type = Column(Enum(EnumType), default='other')
     enabled = Column(Boolean, nullable=False, default=True)
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    category_id = Column(Integer, ForeignKey(Category.id, name="fk_post_category_id"), nullable=False)
 
     def __repr__(self):
         return f"Post('{self.id}', '{self.created}', '{self.title}')"
@@ -46,8 +60,16 @@ class Post(db.Model):
             current_user_id = None
 
         if current_user_id:
-            query = sa.select(Post).where((Post.enabled == True).__or__(Post.user_id == current_user_id))
+            query = sa.select(Post).where(
+                (Post.enabled == True).__or__(Post.user_id == current_user_id))
         else:
             query = sa.select(Post).where((Post.enabled == True))
 
         return db.session.execute(query).scalars()
+
+
+post_tag_m2m = db.Table(
+    "post_tag",
+    Column("post_id", ForeignKey(Post.id, name="fk_post_tag_m2m_post_id"), primary_key=True),
+    Column("tag_id", ForeignKey(Tag.id, name="fk_post_tag_m2m_tag_id"), primary_key=True),
+)
