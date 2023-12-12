@@ -58,8 +58,8 @@ class Post(db.Model):
     type = Column(Enum(EnumType), default='other')
     enabled = Column(Boolean, nullable=False, default=True)
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
-    category_id = Column(Integer, ForeignKey(Category.id, name="fk_post_category_id"), nullable=False)
-    tags: Mapped[List[Tag]] = db.relationship(secondary=post_tag_m2m, back_populates="posts")
+    category_id = Column(Integer, ForeignKey(Category.id, name="fk_post_category_id"), nullable=True)
+    tags: Mapped[List[Tag]] = db.relationship('Tag', secondary=post_tag_m2m, back_populates="posts")
 
     def __repr__(self):
         return f"Post('{self.id}', '{self.created}', '{self.title}')"
@@ -76,5 +76,5 @@ class Post(db.Model):
         else:
             query = sa.select(Post).where((Post.enabled == True))
 
-        return db.session.execute(query).scalars()
+        return db.session.execute(query.order_by(Post.created.desc())).scalars()
 

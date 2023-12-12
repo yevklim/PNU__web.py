@@ -4,12 +4,13 @@
 {% block page_title %} Update Post {% endblock %}
 
 {% block page_body %}
-<form method="POST" novalidate>
+<form class="mb-3" method="POST" novalidate>
   {{ form.csrf_token }}
   {{ render_field(form.title) }}
   {{ render_field(form.text) }}
-  {{ form.category() }}
-  {{ form.type() }}
+  {{ render_field(form.type) }}
+  {{ render_field(form.category) }}
+  {{ render_field(form.tags) }}
   {{ render_field(form.enabled) }}
   {{ render_field(form.submit) }}
 </form>

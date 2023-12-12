@@ -7,7 +7,9 @@
 <h3>{{ post["title"] }}</h3>
 <p class="mb-2"> {{ post["created"].ctime() }} </p>
 <p class="d-flex gap-2 mb-2">
+    {% if post["category"] %}
     <span class="badge text-bg-primary text-light"> {{ post["category"]["name"] }} </span>
+    {% endif %}
     <span class="badge text-bg-secondary text-light"> {{ post["type"]["label"] }} </span>
     {% if post["user_id"] == current_user.id %}
         {% if post["enabled"] %}
@@ -16,6 +18,9 @@
         <span class="badge text-bg-danger">Hidden from others</span>
         {% endif %}
     {% endif %}
+    {% for tag in post["tags"] %}
+        <span class="badge text-bg-primary text-light"> {{ tag["name"] }} </span>
+    {% endfor %}
 </p>
 <p class="pre-wrap">{{ post["text"] }}</p>
 {% if post["user_id"] == current_user.id %}

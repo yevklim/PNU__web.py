@@ -3,6 +3,8 @@
     {{ render_text_input(field) }}
   {% elif field.type == 'TextAreaField' %}
     {{ render_text_area(field) }}
+  {% elif field.type == 'SelectField' or field.type == 'SelectMultipleField' %}
+    {{ render_select(field) }}
   {% elif field.type == 'BooleanField' %}
     {{ render_checkbox(field) }}
   {% elif field.type == 'SubmitField' %}
@@ -63,6 +65,36 @@
         </div>
       {% endif %}
     </div>
+  </div>
+{% endmacro %}
+
+{% macro render_select(field) %}
+  <div class="mb-3">
+    <label for="{{ field.id }}" class="form-label"> {{ field.label.text }} </label>
+    <select
+      class="form-select {% if field.errors.__len__() > 0 %} is-invalid {% endif %}"
+      type="checkbox"
+      value="on"
+      id="{{ field.id }}"
+      name="{{ field.name }}"
+      aria-describedby="{{ field.id }}-feedback"
+      {% if field.type == 'SelectMultipleField' %} multiple {% endif %}
+    >
+      {% for c_id, c_name in field.choices %}
+        <option value="{{ c_id }}" {% if field.data == c_id %}selected{% endif %}>
+          {{ c_name }}
+        </option>
+      {% endfor %}
+    </select>
+    {% if field.errors %}
+      <div id="{{ field.id }}-feedback" class="invalid-feedback">
+        <ul>
+          {% for error in field.errors %}
+            <li> {{ error }} </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
   </div>
 {% endmacro %}
 
