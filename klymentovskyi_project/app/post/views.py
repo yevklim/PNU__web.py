@@ -10,7 +10,9 @@ from .models import Post, Category, Tag
 @post_blueprint.route('/', methods=["GET"])
 @post_blueprint.route('/list', methods=["GET"])
 def list():
-    all_posts = Post.visible_posts().all()
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 3, type=int)
+    all_posts = Post.visible_posts(page, per_page)
     return render_template("post/list.html", all_posts=all_posts)
 
 

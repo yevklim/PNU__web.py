@@ -64,7 +64,7 @@ class Post(db.Model):
     def __repr__(self):
         return f"Post('{self.id}', '{self.created}', '{self.title}')"
 
-    def visible_posts():
+    def visible_posts(page: int, per_page: int = 5):
         try:
             current_user_id = current_user.id
         except:
@@ -73,8 +73,10 @@ class Post(db.Model):
         if current_user_id:
             query = sa.select(Post).where(
                 (Post.enabled == True).__or__(Post.user_id == current_user_id))
+            query = Post.query.where((Post.enabled == True).__or__(Post.user_id == current_user_id))
         else:
             query = sa.select(Post).where((Post.enabled == True))
+            query = Post.query.where((Post.enabled == True))
 
-        return db.session.execute(query.order_by(Post.created.desc())).scalars()
+        return query.order_by(Post.created.desc()).paginate(page=page, per_page=per_page)
 

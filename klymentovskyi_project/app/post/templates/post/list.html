@@ -5,8 +5,35 @@
 {% block page_body %}
 
 <h1>Posts</h1>
-{% if all_posts.__len__() > 0 %}
-<ul class="list-group list-group-flush">
+{% if all_posts.items.__len__() > 0 %}
+{% if all_posts.pages > 1 %}
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if not all_posts.has_prev %} disabled {% endif %}">
+                <a class="page-link" href="{{ url_for('.list') }}"> << </a>
+            </li>
+            <li class="page-item {% if not all_posts.has_prev %} disabled {% endif %}">
+                <a class="page-link" href="{{ url_for('.list', page=all_posts.prev_num) }}"> < </a>
+            </li>
+
+            {% for page in all_posts.iter_pages(left_current=3, right_current=3) %}
+                <li class="page-item {% if page == all_posts.page %} active {% endif %}">
+                    <a class="page-link" href="{{ url_for('.list', page=page) }}">
+                        {{ page or "..." }}
+                    </a>
+                </li>
+            {% endfor %}
+
+            <li class="page-item {% if not all_posts.has_next %} disabled {% endif %}">
+                <a class="page-link" href="{{ url_for('.list', page=all_posts.next_num) }}"> > </a>
+            </li>
+            <li class="page-item {% if not all_posts.has_next %} disabled {% endif %}">
+                <a class="page-link" href="{{ url_for('.list', page=all_posts.last) }}"> >> </a>
+            </li>
+        </ul>
+    </nav>
+{% endif %}
+<ul class="list-group list-group-flush mb-3">
     {% for post in all_posts %}
     <li class="list-group-item px-0">
         <h3>
@@ -41,6 +68,40 @@
     </li>
     {% endfor%}
 </ul>
+{% if all_posts.pages > 1 %}
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if not all_posts.has_prev %} disabled {% endif %}">
+                <a class="page-link"
+                href="{{ url_for('.list') }}"
+                tabindex="-1"> << </a>
+            </li>
+            <li class="page-item {% if not all_posts.has_prev %} disabled {% endif %}">
+                <a class="page-link"
+                href="{{ url_for('.list', page=all_posts.prev_num) }}"
+                tabindex="-1"> < </a>
+            </li>
+
+            {% for page in all_posts.iter_pages(left_edge=1, left_current=3, right_current=3, right_edge=1) %}
+                <li class="page-item {% if page == all_posts.page %} active {% endif %}">
+                    <a class="page-link"
+                    href="{{ url_for('.list', page=page) }}">
+                        {{ page or "..." }}
+                    </a>
+                </li>
+            {% endfor %}
+
+            <li class="page-item {% if not all_posts.has_next %} disabled {% endif %}">
+                <a class="page-link"
+                href="{{ url_for('.list', page=all_posts.next_num) }}"> > </a>
+            </li>
+            <li class="page-item {% if not all_posts.has_next %} disabled {% endif %}">
+                <a class="page-link"
+                href="{{ url_for('.list', page=all_posts.last) }}"> >> </a>
+            </li>
+        </ul>
+    </nav>
+{% endif %}
 {% else %}
 <h4>
     No posts
