@@ -35,6 +35,9 @@ def create_app(config_name = "default"):
         from .todo import todo_blueprint
         app.register_blueprint(todo_blueprint)
 
+        from .todo.api import todo_api_blueprint
+        api.register_blueprint(todo_api_blueprint)
+
         from .feedback import feedback_blueprint
         app.register_blueprint(feedback_blueprint)
 
