@@ -1,10 +1,16 @@
 from flask import Blueprint
-todo_api_blueprint = Blueprint("todo", __name__, template_folder="templates", url_prefix="/todo")
+todo_api_blueprint = Blueprint("todo", __name__, url_prefix="/todo")
 
 from flask import request, jsonify
 from app import db
 
+from app.user.api import token_required
+
 from .models import ToDo
+
+@todo_api_blueprint.route('/ping', methods=["GET", "POST"])
+def ping():
+    return "pong"
 
 @todo_api_blueprint.route("/", methods=["GET"])
 def list():
@@ -14,6 +20,7 @@ def list():
     ]), 200
 
 @todo_api_blueprint.route("/", methods=["POST"])
+@token_required
 def add():
     post: dict | None = request.get_json(silent=True)
 
@@ -62,6 +69,7 @@ def get(todo_id: int):
     return jsonify(todo.as_dict()), 200
 
 @todo_api_blueprint.route("/<int:todo_id>", methods=["PUT"])
+@token_required
 def update(todo_id):
     todo: ToDo = ToDo.query.get(todo_id)
     if todo is None:
@@ -72,6 +80,7 @@ def update(todo_id):
     return jsonify(todo.as_dict()), 200
 
 @todo_api_blueprint.route("/<int:todo_id>", methods=["DELETE"])
+@token_required
 def delete(todo_id):
     todo: ToDo = ToDo.query.get(todo_id)
     if todo is None:
