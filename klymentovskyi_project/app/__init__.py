@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
@@ -27,6 +27,8 @@ def create_app(config_name = "default"):
     login_manager.login_message_category = "info"
 
     with app.app_context():
+        api = Blueprint("api", __name__, url_prefix="/api")
+
         from .base import base_blueprint, menu
         app.register_blueprint(base_blueprint)
 
@@ -48,6 +50,8 @@ def create_app(config_name = "default"):
         from .portfolio import portfolio_blueprint, views as portfolio_views
         app.register_blueprint(portfolio_blueprint)
         app.route("/")(portfolio_views.main)
+
+        app.register_blueprint(api)
 
         menu.add_items(
             menu.MenuItem("Main", "portfolio.main"),
