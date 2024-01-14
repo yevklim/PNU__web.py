@@ -12,7 +12,7 @@ class UserSchema(mm.SQLAlchemyAutoSchema):
     @validates_schema
     def validate_id(self, data, partial, many):
         id = data.get("id")
-        if id:
+        if id is not None:
             raise ValidationError("ID mustn't be set directly.", "id")
 
     @validates_schema
@@ -34,19 +34,19 @@ class UserSchema(mm.SQLAlchemyAutoSchema):
     @validates_schema
     def validate_passhash(self, data, partial, many):
         password_hash = data.get("password_hash")
-        if password_hash:
+        if password_hash is not None:
             raise ValidationError("Password hash mustn't be set directly.", "password_hash")
 
     @validates_schema
     def validate_lastseen(self, data, partial, many):
         last_seen = data.get("last_seen")
-        if last_seen:
+        if last_seen is not None:
             raise ValidationError("Last seen date mustn't be set directly.", "last_seen")
 
     @validates_schema
     def validate_image_file(self, data, partial, many):
         image_file = data.get("image_file")
-        if image_file:
+        if image_file is not None:
             raise ValidationError("Image file mustn't be set directly.", "image_file")
 
     class Meta:
