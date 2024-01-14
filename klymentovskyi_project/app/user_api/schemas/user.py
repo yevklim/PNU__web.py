@@ -52,6 +52,3 @@ class UserSchema(mm.SQLAlchemyAutoSchema):
     class Meta:
         model = User
         load_instance = True
-
-class UserUpdateSchema(UserSchema):
-    pass
