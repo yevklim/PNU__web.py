@@ -3,6 +3,7 @@ from flask import request
 from flask_restful import Resource
 from app.order_api.models import Order
 from .schemas.order import OrderSchema
+from app.user.api import token_required
 
 
 class OrdersApi(Resource):
@@ -25,6 +26,7 @@ class OrderApi(Resource):
         order = Order.query.filter_by(id=id).first_or_404(description='Order not found.')
         return schema.dump(order)
 
+    @token_required(use_jsonify=False, message_property="message")
     def put(self, id):
         schema = OrderSchema(partial=True)
         order = Order.query.filter_by(id=id).first_or_404(description='Order not found.')
@@ -33,6 +35,7 @@ class OrderApi(Resource):
         db.session.commit()
         return schema.dump(order)
 
+    @token_required(use_jsonify=False, message_property="message")
     def delete(self, id):
         schema = OrderSchema()
         order = Order.query.filter_by(id=id).first_or_404(description='Order not found.')

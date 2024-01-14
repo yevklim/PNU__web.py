@@ -6,8 +6,8 @@ from app.order_api.models import Order, OrderStatusEnum
 
 class OrderSchema(mm.SQLAlchemyAutoSchema):
     status = fields.Enum(OrderStatusEnum, required=False)
-    sender_phone = fields.String(required=True, validate=[Regexp("^((\+?3)?8)?0\d{9}$")])
-    receiver_phone = fields.String(required=True, validate=[Regexp("^((\+?3)?8)?0\d{9}$")])
+    sender_phone = fields.String(required=True, validate=[Regexp("^((\+?3)?8)?0\d{9}$", error="Valid ukrainian phone number is required, e.g., 380991234567")])
+    receiver_phone = fields.String(required=True, validate=[Regexp("^((\+?3)?8)?0\d{9}$", error="Valid ukrainian phone number is required, e.g., 380991234567")])
     commodity_name = fields.String(required=True, validate=[Length(max=100)])
     commodity_total_price = fields.Float(required=True, validate=[Range(min=0)])
     sent_date = fields.DateTime(required=False)
@@ -16,7 +16,7 @@ class OrderSchema(mm.SQLAlchemyAutoSchema):
     @validates_schema
     def validate_id(self, data, partial, many):
         id = data.get("id")
-        if id:
+        if id is not None:
             raise ValidationError("Unknown field.", "id")
 
     class Meta:

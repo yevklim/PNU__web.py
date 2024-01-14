@@ -56,13 +56,13 @@ def parse_token(token: str):
     except jwt.InvalidTokenError:
         return None, "Invalid token"
 
-def token_required(use_jsonify = True):
+def token_required(use_jsonify = True, message_property="errorMessage"):
     def inner(f):
         @wraps(f)
         def decorated(*args, **kwargs):
             if not jwt_token:
                 response = {
-                    "errorMessage": "Token is missing",
+                    message_property: "Token is missing",
                 }
                 code = 401
                 if use_jsonify:
@@ -72,7 +72,7 @@ def token_required(use_jsonify = True):
 
             if jwt_error:
                 response = {
-                    "errorMessage": jwt_error._get_current_object()
+                    message_property: jwt_error._get_current_object()
                 }
                 code = 401
                 if use_jsonify:
