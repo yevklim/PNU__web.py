@@ -1,0 +1,382 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "description": "",
+        "version": "0.0.1",
+        "title": ""
+    },
+    "servers": [
+        {
+            "url": "/"
+        }
+    ],
+    "paths": {
+        "/api2/user": {
+            "post": {
+                "summary": "Register a new user.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterUser"
+                            }
+                        }
+                    }
+                },
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Responds with the data of the newly registered user.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed to register a user due to validation errors.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegisterUserValidationErrors"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api2/user/{id}": {
+            "get": {
+                "summary": "Get user data by ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Responds with the user data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserNotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update user data by ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUser"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Responds with the updated user data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed to update the user due to validation errors.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateUserValidationErrors"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserNotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a user by ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Responds with the deleted user data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserNotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "about_me": {
+                        "type": "string"
+                    },
+                    "image_file": {
+                        "type": "string",
+                        "example": "default.jpg"
+                    },
+                    "last_seen": {
+                        "type": "string",
+                        "format": "datetime"
+                    }
+                }
+            },
+            "UpdateUser": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "about_me": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            },
+            "RegisterUser": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "username",
+                    "email",
+                    "password"
+                ]
+            },
+            "RegisterUserValidationErrors": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Invalid JSON payload has been provided."
+                    },
+                    "errors": {
+                        "type": "object",
+                        "properties": {
+                            "email": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/EmailValidationError"
+                                }
+                            },
+                            "username": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/UsernameValidationError"
+                                }
+                            },
+                            "password": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/PasswordValidationError"
+                                }
+                            },
+                            "unknown": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/UnknownFieldValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "UpdateUserValidationErrors": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Invalid JSON payload has been provided."
+                    },
+                    "errors": {
+                        "type": "object",
+                        "properties": {
+                            "email": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/EmailValidationError"
+                                }
+                            },
+                            "username": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/UsernameValidationError"
+                                }
+                            },
+                            "password": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/PasswordValidationError"
+                                }
+                            },
+                            "unknown": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/UnknownFieldValidationError"
+                                }
+                            },
+                            "unallowed": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/UnallowedFieldValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "EmailValidationError": {
+                "type": "string",
+                "enum": [
+                    "E-mail already registered.",
+                    "Missing data for required field.",
+                    "Not a valid email address.",
+                    "Longer than maximum length 120."
+                ]
+            },
+            "UsernameValidationError": {
+                "type": "string",
+                "enum": [
+                    "Username already in use.",
+                    "Missing data for required field.",
+                    "Length must be between 4 and 20."
+                ]
+            },
+            "PasswordValidationError": {
+                "type": "string",
+                "enum": [
+                    "Missing data for required field.",
+                    "Length must be between 6 and 60."
+                ]
+            },
+            "UnknownFieldValidationError": {
+                "type": "string",
+                "enum": [
+                    "Unknown field."
+                ]
+            },
+            "UnallowedFieldValidationError": {
+                "type": "string",
+                "enum": [
+                    "ID mustn't be set directly.",
+                    "Password hash mustn't be set directly.",
+                    "Last seen date mustn't be set directly.",
+                    "Image file mustn't be set directly."
+                ]
+            },
+            "UserNotFoundError": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "value": "User not found.",
+                        "example": "User not found."
+                    }
+                }
+            }
+        }
+    }
+}
+

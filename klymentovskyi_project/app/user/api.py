@@ -38,11 +38,11 @@ def _get_payload_and_error():
 
 jwt_payload, jwt_error = _get_payload_and_error()
 
-def generate_token(username: str):
+def generate_token(sub: str | int):
     payload = {
         "exp": datetime.utcnow() + timedelta(hours=1),
         "iat": datetime.utcnow(),
-        "sub": username
+        "sub": sub
     }
     token = jwt.encode(payload, current_app.config["SECRET_KEY"], algorithm="HS256")
     return token
@@ -56,25 +56,37 @@ def parse_token(token: str):
     except jwt.InvalidTokenError:
         return None, "Invalid token"
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if not jwt_token:
-            return jsonify({
-                "errorMessage": "Token is missing",
-            }), 401
+def token_required(use_jsonify = True):
+    def inner(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            if not jwt_token:
+                response = {
+                    "errorMessage": "Token is missing",
+                }
+                code = 401
+                if use_jsonify:
+                    return jsonify(response), code
+                else:
+                    return response, code
 
-        if jwt_error:
-            return jsonify({
-                "errorMessage": jwt_error._get_current_object()
-            }), 401
+            if jwt_error:
+                response = {
+                    "errorMessage": jwt_error._get_current_object()
+                }
+                code = 401
+                if use_jsonify:
+                    return jsonify(response), code
+                else:
+                    return response, code
 
-        return f(*args, **kwargs)
+            return f(*args, **kwargs)
 
-    return decorated
+        return decorated
+    return inner
 
 @user_api_blueprint.route('/ping', methods=["GET", "POST"])
-@token_required
+@token_required()
 def ping():
     return "pong"
 

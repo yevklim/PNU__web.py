@@ -20,7 +20,7 @@ def list():
     ]), 200
 
 @todo_api_blueprint.route("/", methods=["POST"])
-@token_required
+@token_required()
 def add():
     post: dict | None = request.get_json(silent=True)
 
@@ -69,7 +69,7 @@ def get(todo_id: int):
     return jsonify(todo.as_dict()), 200
 
 @todo_api_blueprint.route("/<int:todo_id>", methods=["PUT"])
-@token_required
+@token_required()
 def update(todo_id):
     todo: ToDo = ToDo.query.get(todo_id)
     if todo is None:
@@ -80,7 +80,7 @@ def update(todo_id):
     return jsonify(todo.as_dict()), 200
 
 @todo_api_blueprint.route("/<int:todo_id>", methods=["DELETE"])
-@token_required
+@token_required()
 def delete(todo_id):
     todo: ToDo = ToDo.query.get(todo_id)
     if todo is None:

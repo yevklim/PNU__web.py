@@ -3,11 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user
+from flask_marshmallow import Marshmallow
 
 db = SQLAlchemy()
 migrate = Migrate()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
+mm = Marshmallow()
 
 def create_app(config_name = "default"):
     from config import CONFIG
@@ -20,6 +22,7 @@ def create_app(config_name = "default"):
     db.init_app(app)
     migrate.init_app(app, db)
     bcrypt.init_app(app)
+    mm.init_app(app)
 
     login_manager.init_app(app)
     login_manager.login_view = "user.login"
@@ -28,6 +31,7 @@ def create_app(config_name = "default"):
 
     with app.app_context():
         api = Blueprint("api", __name__, url_prefix="/api")
+        api2 = Blueprint("api2", __name__, url_prefix="/api2")
 
         from .base import base_blueprint, menu
         app.register_blueprint(base_blueprint)
@@ -57,7 +61,14 @@ def create_app(config_name = "default"):
         app.register_blueprint(portfolio_blueprint)
         app.route("/")(portfolio_views.main)
 
+        from .user_api import user_api2_blueprint
+        api2.register_blueprint(user_api2_blueprint)
+
         app.register_blueprint(api)
+        app.register_blueprint(api2)
+
+        from .swagger_ui import swagger_ui_blueprint
+        app.register_blueprint(swagger_ui_blueprint)
 
         menu.add_items(
             menu.MenuItem("Main", "portfolio.main"),
