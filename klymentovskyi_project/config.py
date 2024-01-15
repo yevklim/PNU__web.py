@@ -9,6 +9,15 @@ class Development():
     SQLALCHEMY_DATABASE_URI = f"sqlite:///db.sqlite"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+class Test():
+    DEBUG = True
+    SECRET_KEY = env.get("SECRET_KEY", "xW3c22rftt3YGuXqzvsTKQrz7LDW393h")
+    FLASK_SECRET = SECRET_KEY
+    WTF_CSRF_ENABLED = False
+    SESSION_PERMANENT = True
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///db_test.sqlite"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 class Production():
     DEBUG = False
     SECRET_KEY = env.get("SECRET_KEY", "isDAGa!2vs7k2stx4xGufiM-FwveWY.u")
@@ -22,4 +31,5 @@ CONFIG = {
     "default": Development,
     "prod": Production,
     "dev": Development,
+    "test": Test,
 }
