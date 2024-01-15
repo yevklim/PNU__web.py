@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, abort
 from flask_login import current_user, login_required
 from app import db
 
@@ -38,15 +38,17 @@ def create():
 
 @post_blueprint.route('/<int:id>', methods=["GET"])
 def post(id):
-    post = Post.query.get_or_404(id)
+    post = Post.get_visible_post_or_abort(id)
     return render_template("post/post.html", post=post)
 
 
 @post_blueprint.route('/<int:id>/update', methods=["GET", "POST"])
 @login_required
 def update(id):
-    form = PostUpdateForm()
     post = Post.query.get_or_404(id)
+    if post.user_id != current_user.id:
+        abort(403)
+    form = PostUpdateForm()
     if form.validate_on_submit():
         post.title = form.title.data
         post.text = form.text.data
@@ -75,8 +77,10 @@ def update(id):
 @post_blueprint.route('/<int:id>/delete', methods=["GET", "POST"])
 @login_required
 def delete(id):
-    form = PostDeletionForm()
     post = Post.query.get_or_404(id)
+    if post.user_id != current_user.id:
+        abort(403)
+    form = PostDeletionForm()
     if form.validate_on_submit():
         db.session.delete(post)
         db.session.commit()

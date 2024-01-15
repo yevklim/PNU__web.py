@@ -5,7 +5,7 @@
 {% block page_body %}
 
 <h3>{{ post["title"] }}</h3>
-<p class="mb-2"> {{ post["created"].ctime() }} </p>
+<p class="mb-2"> {{ post.created.ctime() }} </p>
 <p class="d-flex gap-2 mb-2">
     {% if post["category"] %}
     <span class="badge text-bg-primary text-light"> {{ post["category"]["name"] }} </span>

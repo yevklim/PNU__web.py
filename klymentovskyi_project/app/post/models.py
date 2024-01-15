@@ -4,6 +4,7 @@ from typing import List
 from sqlalchemy import Column, Integer, String, DateTime, Enum, Boolean, ForeignKey
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped
+from flask import abort
 from flask_login import current_user
 import enum
 from datetime import datetime
@@ -63,6 +64,32 @@ class Post(db.Model):
 
     def __repr__(self):
         return f"Post('{self.id}', '{self.created}', '{self.title}')"
+
+    def get_visible_post(id: int) -> Post | None:
+        post = Post.query.get(id)
+        if post is None or post.enabled:
+            return post
+
+        if current_user.is_authenticated and current_user.id == post.user_id:
+            return post
+
+        return None
+
+    def get_visible_post_or_abort(id: int) -> Post:
+        post = Post.query.get(id)
+
+        if post is None:
+            abort(404)
+
+        if not post.enabled:
+
+            if not current_user.is_authenticated:
+                abort(401)
+
+            if current_user.id != post.user_id:
+                abort(403)
+
+        return post
 
     def visible_posts(page: int, per_page: int = 5):
         try:
